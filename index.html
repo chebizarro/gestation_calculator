@@ -1,0 +1,336 @@
+<!doctype html>
+<html>
+<head>
+<title>Gestation Calculator</title>
+<meta name="description" content="Gestation Calculator">
+<meta name="keywords" content="goat gestation calendar">
+
+<!-- Gestation Calendar CSS Start -->
+
+<style type="text/css">
+
+	.amp-wp-article .wp-block-jetpack-button{color:#fff}.wp-block-jetpack-button button{border:inherit}.ui-datepicker {
+		padding: 0;
+		margin: 0;
+		-webkit-border-radius: 0;
+		-moz-border-radius: 0;
+		border-radius: 0;
+		background-color: #fff;
+		border: 1px solid #dcdcde;
+		border-top: none;
+		-webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.075);
+		box-shadow: 0 3px 6px rgba(0, 0, 0, 0.075);
+		width: auto;
+	}
+		
+	.ui-datepicker * {
+		padding: 0;
+		-webkit-border-radius: 0;
+		-moz-border-radius: 0;
+		border-radius: 0;
+	}
+	
+	.ui-datepicker table {
+		width: auto;
+		margin: 0;
+		border: none;
+		border-collapse: collapse;
+	}
+	
+	.ui-datepicker .ui-widget-header,
+	.ui-datepicker .ui-datepicker-header {
+		background-image: none;
+		border: none;
+		font-weight: normal;
+	}
+	
+	.ui-datepicker .ui-datepicker-header .ui-state-hover {
+		background: transparent;
+		border-color: transparent;
+		cursor: pointer;
+	}
+	
+	.ui-datepicker .ui-datepicker-title {
+		margin: 0;
+		padding: 10px 0;
+		font-size: 14px;
+		line-height: 14px;
+		text-align: center;
+	}
+	
+	.ui-datepicker .ui-datepicker-prev,
+	.ui-datepicker .ui-datepicker-next {
+		position: relative;
+		top: 0;
+		height: 34px;
+		width: 34px;
+	}
+	
+	.ui-datepicker .ui-state-hover.ui-datepicker-prev,
+	.ui-datepicker .ui-state-hover.ui-datepicker-next {
+		border: none;
+	}
+	
+	.ui-datepicker .ui-datepicker-prev,
+	.ui-datepicker .ui-datepicker-prev-hover {
+		left: 0;
+	}
+	
+	.ui-datepicker .ui-datepicker-next,
+	.ui-datepicker .ui-datepicker-next-hover {
+		right: 0;
+	}
+	
+	.ui-datepicker .ui-datepicker-next span,
+	.ui-datepicker .ui-datepicker-prev span {
+		display: none;
+	}
+	
+	.ui-datepicker .ui-datepicker-prev {
+		float: left;
+	}
+	
+	.ui-datepicker .ui-datepicker-next {
+		float: right;
+	}
+	
+	.ui-datepicker .ui-datepicker-prev:before,
+	.ui-datepicker .ui-datepicker-next:before {
+		font: normal 20px/34px 'dashicons';
+		padding-left: 7px;
+		speak: none;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		width: 34px;
+		height: 34px;
+	}
+	
+	.ui-datepicker .ui-datepicker-prev:before {
+		content: '\f341';
+	}
+	
+	.ui-datepicker .ui-datepicker-next:before {
+		content: '\f345';
+	}
+	
+	.ui-datepicker .ui-datepicker-prev-hover:before,
+	.ui-datepicker .ui-datepicker-next-hover:before {
+		opacity: 0.7;
+	}
+	
+	.ui-datepicker select.ui-datepicker-month,
+	.ui-datepicker select.ui-datepicker-year {
+		width: 33%;
+	}
+	
+	.ui-datepicker thead {
+		font-weight: 600;
+	}
+	
+	.ui-datepicker th {
+		padding: 10px;
+		border-width: 1px;
+	}
+	
+	.ui-datepicker td {
+		padding: 0;
+		border: 1px solid #f4f4f4;
+	}
+	
+	.ui-datepicker td.ui-datepicker-other-month {
+		border: transparent;
+	}
+	
+	.ui-datepicker td.ui-datepicker-week-end {
+		background-color: #f4f4f4;
+		border: 1px solid #f4f4f4;
+	}
+	
+	.ui-datepicker td.ui-datepicker-today {
+		background-color: #f0f0c0;
+	}
+	
+	.ui-datepicker td.ui-datepicker-current-day {
+		background: #bbdd88;
+	}
+	
+	.ui-datepicker td .ui-state-default {
+		background: transparent;
+		border: none;
+		text-align: center;
+		text-decoration: none;
+		width: auto;
+		display: block;
+		padding: 5px 10px;
+		font-weight: normal;
+		color: #444;
+	}
+	
+	.ui-datepicker td.ui-state-disabled .ui-state-default {
+		opacity: 0.5;
+	}
+		
+	</style>
+
+<!-- Gestation Calendar CSS End -->
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Gestation Calendar Javascript Start -->
+
+<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+
+<script type="text/javascript">
+
+function uuid() {
+	 var temp_url = URL.createObjectURL(new Blob());
+	 var uuid = temp_url.toString();
+	 URL.revokeObjectURL(temp_url);
+	 return uuid.substr(uuid.lastIndexOf('/') + 1); 
+}
+
+function convertDate(date) {
+	var event = date.toISOString();
+	event = event.split("T")[0];
+	event = event.split("-");
+	event = event.join("");
+	return event;
+}
+
+function makeIcsFile(event) {
+	var cal =
+		"BEGIN:VCALENDAR\n" +
+		"CALSCALE:GREGORIAN\n" +
+		"METHOD:PUBLISH\n" +
+		"PRODID:-//ical.floof.farm//Floof Farm Gestation Calculator\n" +
+		"VERSION:2.0\n" +
+		"BEGIN:VEVENT\n" +
+		"UID:" + uuid() +
+		"\n" +
+		"DTSTART;VALUE=DATE:" +
+		convertDate(event.start) +
+		"\n" +
+		"DTEND;VALUE=DATE:" +
+		convertDate(event.end) +
+		"\n" +
+		"SUMMARY;LANGUAGE=en-us:" +
+		"Kidding Date " + event.summary +
+		"\n" +
+		"DESCRIPTION:" +
+		event.description +
+		"\n" +
+		"END:VEVENT\n" +
+		"END:VCALENDAR";
+
+	return cal;
+}
+
+function ISODateString(d) {
+	function pad(n) { return n<10 ? '0'+n : n }
+
+	return d.getUTCFullYear()+ ""
+			+ pad(d.getUTCMonth()+1) + ""
+			+ pad(d.getUTCDate());
+}
+
+function radio_select(e) {
+	calculate_due_date(jQuery("#gcc-dateofbreeding").val());
+}
+	
+function calculate_due_date(ds) {
+	if (ds === "") return;
+	var d = jQuery.datepicker.parseDate("mm/dd/yy", ds);
+	var gest_period = parseInt(jQuery('input[name="breeds"]:checked').val());
+	d.setDate(d.getDate() + gest_period);
+	jQuery("#gcc-duedate").val(d.toLocaleDateString());
+	jQuery("#gcc-google").prop("disabled", false);
+	jQuery("#gcc-ical").prop("disabled", false);
+}
+
+function get_event() {
+	var name = jQuery("#gcc-doe-name").val();
+	var start = jQuery.datepicker.parseDate(
+		"mm/dd/yy",
+		jQuery("#gcc-duedate").val());
+	var end = new Date(start);
+	end.setDate(start.getDate() + 1);
+
+	return {
+		summary: name,
+		description: "Brought to you by the floof-farm gestation calculator: https://floof.farm/gestation-calculator/",
+		start: start,
+		end: end
+	};
+}
+
+function add_to_ical() {
+	var event = get_event();
+	var url  = makeIcsFile(event);
+	window.open( "data:text/calendar;charset=utf8," + escape(url));
+}
+
+function add_to_google() {
+	var event = get_event();
+	var url = `https://www.google.com/calendar/render?action=TEMPLATE&text=Kidding+Date+${event.summary}&dates=${ISODateString(event.start)}/${ISODateString(event.end)}&details=${event.description}`;
+	window.open(url, '_blank');
+}
+	
+function ready(callbackFunction){
+	if(document.readyState != 'loading')
+		callbackFunction(event);
+	else
+		document.addEventListener("DOMContentLoaded", callbackFunction, { passive: true });
+}
+
+ready(event => {
+	jQuery("form").submit(e => { e.preventDefault(); });
+	jQuery("#gcc-dateofbreeding").datepicker({ onSelect: calculate_due_date });
+	jQuery("#gcc-google").click(add_to_google);
+	jQuery("#gcc-ical").click(add_to_ical);
+	jQuery('input[name="breeds"]').change(radio_select);
+});
+	
+</script>
+
+<!-- Gestation Calendar Javascript End -->
+
+
+</head>
+<body>
+
+<!-- Gestation Calendar HTML Start -->
+
+	<div id="gestation_calculator">
+		<form class="contact-form commentsblock" name="gcc-form" id="gcc-form">
+			<div class="grunion-field-wrap grunion-field-text-wrap grunion-field-width-25-wrap">
+				<label for="gcc-doe-name" class="grunion-field-label text">Doe Name</label>
+				<input type="text" name="gcc-doe-name" id="gcc-doe-name" value="" class="text grunion-field-width-25">
+			</div>
+			<div class="grunion-field-wrap grunion-field-select-wrap grunion-field-width-25-wrap">
+				<input type="radio" class="radio" id="standard_breed" name="breeds" value="150" required="true" checked>
+				<label for="standard_breed" class="grunion-field-label radio">Standard Breed (150 days)</label>
+				<input type="radio" class="radio" id="minature_breed" name="breeds" value="145" required="true">
+				<label for="minature_breed" class="grunion-field-label radio">Minature Breed (145 days)</label>
+			</div>
+			<div class="grunion-field-wrap grunion-field-date-wrap jp-contact-form-date-wrap grunion-field-width-25-wrap">
+				<label for="gcc-dateofbreeding" class="grunion-field-label date">Date of Breeding (mm/dd/yy)</label>
+				<input type="text" name="gcc-dateofbreeding" id="gcc-dateofbreeding" value="" class="date jp-contact-form-date grunion-field-width-25" required="true">
+			</div>
+				<div class="grunion-field-wrap grunion-field-text-wrap grunion-field-width-25-wrap">
+				<label for="gcc-duedate" class="grunion-field-label text">Due Date</label>
+				<input type="text" name="gcc-duedate" id="gcc-duedate" value="" class="text grunion-field-width-25" disabled>
+			</div>
+			<p class="contact-submit">
+				<button class="pushbutton-wide" id="gcc-google" disabled="true">Add to Google Calendar</button>
+			</p>
+			<p class="contact-submit">
+				<button class="pushbutton-wide" id="gcc-ical" disabled="true">Add to iCalendar</button>
+			</p>
+		</form>
+	</div>
+
+<!-- Gestation Calendar HTML End -->
+
+</body>
+</html>
